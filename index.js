@@ -29,8 +29,8 @@ function isProductInCart(cart,id){
 
 function calulateTotal(cart,req){
     total = 0;
-    for(let i=0; i<cart; i++){
-        if(cart[i.sale_price]){
+    for(let i=0; i<cart.length; i++){
+        if(cart[i].sale_price){
             total = total + (cart[i].sale_price*cart[i].quantity);
         } else{
             total = total + (cart[i].price*cart[i].quantity);
@@ -63,7 +63,7 @@ app.post('/add_to_cart', function(req,res){
     var name = req.body.name;
     var price = req.body.price;
     var sale_price = req.body.sale_price;
-    var quantity = req.body.image;
+    var quantity = req.body.quantity;
     var image = req.body.image;
     var product = {id: id, name: name, price: price, sale_price: sale_price, quantity: quantity, image: image}
 
@@ -91,7 +91,7 @@ app.get('/cart', function(req, res) {
     }
 
     var cart = req.session.cart;
-    var total = req.session.total || 0;
+    var total = req.session.total;
 
     res.render('pages/cart', { cart: cart, total: total });
 });
@@ -153,9 +153,11 @@ app.get('/checkout', function(req, res) {
 });
 
 app.post('/place_order', function(req,res){
-    var cart = req.session.cart;
     var total = req.session.total;
-    var  phone = req.body.phone;
+
+    var name = req.body.name;
+    var email = req.body.email;
+    var phone = req.body.phone;
     var city = req.body.city;
     var address = req.body.address;
     var cost = req.session.total;
@@ -180,7 +182,7 @@ app.post('/place_order', function(req,res){
         if(err){
             console.log(err)
         } else {
-            var query = "INSERT INTO ORDERS(cost,name,email,status,city,address,phone,date,product_ids) VALUES ?"
+            var query = "INSERT INTO orders (cost,name,email,status,city,address,phone,date,product_ids) VALUES ?"
 
             var values = [[cost,name,email,status,city,address,phone,date,product_ids]];
 
